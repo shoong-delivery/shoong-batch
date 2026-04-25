@@ -1,14 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
 
-function msUntilNoon() {
-  const now = new Date();
-  const noon = new Date();
-  noon.setHours(12, 0, 0, 0);
-  if (now >= noon) noon.setDate(noon.getDate() + 1);
-  return noon - now;
-}
-
 async function deleteOldOrders() {
   console.log('[batch] 7일 이상된 주문 삭제 시작');
   try {
@@ -16,12 +8,9 @@ async function deleteOldOrders() {
     console.log('[batch] 삭제 완료 -', res.data);
   } catch (err) {
     console.error('[batch] 삭제 실패 -', err.message);
+    process.exit(1); // 실패 시 CronJob이 재시도하도록
   }
-
-  setTimeout(deleteOldOrders, 24 * 60 * 60 * 1000);
+  process.exit(0);
 }
 
-const delay = msUntilNoon();
-console.log(`[batch-service] 다음 실행까지 ${Math.round(delay / 1000 / 60)}분 남음`);
-
-setTimeout(deleteOldOrders, delay);
+deleteOldOrders();
