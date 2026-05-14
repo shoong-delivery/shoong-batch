@@ -15,4 +15,6 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
-CMD ["node", "dist/index.js"]
+# K8s CronJob에서 args로 서브커맨드 전달
+#   args: ["cleanup"] / ["auto-complete-cooking"] / ["auto-complete-delivery"]
+ENTRYPOINT ["node", "dist/index.js"]
